@@ -13,7 +13,8 @@ class Directory(db.Model):
     def json(self):
         return{'id': id, 'name': self.name}
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 @app.get('/status/')
 def status():  # put application's code here
