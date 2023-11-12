@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, current_app, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 
@@ -16,12 +16,12 @@ class Directory(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.get('/status/')
+@app.route('/status/', methods = ['GET'])
 def status():  # put application's code here
     return 'pong'
 
 #crear directorio
-@app.post('/directory/')
+@app.route('/directory/', methods = ['POST'])
 def crear_directorio():
     try:
         data = request.get_json()
@@ -32,7 +32,7 @@ def crear_directorio():
     except:
         return make_response(jsonify({'message' : 'error creando directorio'}),400)
 
-@app.get('/directory/')
+@app.route('/directory/', methods = ['GET'])
 def get_directorios():
     try:
         directorios = Directory.query.all()
@@ -40,7 +40,7 @@ def get_directorios():
     except:
         return make_response(jsonify({'message' : 'error consultando directorios'}),500)
 
-@app.get('/directory/<int:id>')
+@app.route('/directory/<int:id>', methods = ['GET'])
 def get_directorio(id):
     try:
         directorio = Directory.query.filter_by(id = id).first()
@@ -48,7 +48,7 @@ def get_directorio(id):
     except:
         return make_response(jsonify({'message' : 'error consultando directorio'}),500)
 
-@app.put('/directory/<int:id>')
+@app.route('/directory/<int:id>', methods = ['PUT'])
 def get_directorio(id):
     try:
         directorio = Directory.query.filter_by(id=id).first()
@@ -61,7 +61,7 @@ def get_directorio(id):
     except:
         return make_response(jsonify({'message' : 'error actualizando directorio'}),500)
 
-@app.delete('/directory/<int:id>')
+@app.route('/directory/<int:id>', methods = ['DELETE'])
 def get_directorio(id):
     try:
         directorio = Directory.query.filter_by(id=id).first()
