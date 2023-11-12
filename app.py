@@ -71,7 +71,3 @@ def get_directorio(id):
         return make_response(jsonify({'message': 'directorio no encontrado'}), 404)
     except:
         return make_response(jsonify({'message' : 'error eliminando directorio'}),500)
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8000)
