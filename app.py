@@ -5,110 +5,80 @@ from os import environ
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URL')
 db = SQLAlchemy(app)
+current_app.app_context().push()
 
 
-class Usuarios(db.Model):
-    __nombreTabla__ = 'usuarios'
-
+class Directory(db.Model):
+    __tablename__ = 'directory'
     id = db.Column(db.Integer, primary_key=True)
-    nombre_usuario = db.Column(db.String(30), unique=True, nullable=False)
-    correos_usuario = db.Column(db.ARRAY(db.String(50)), unique=True, nullable=False)
+    name = db.Column(db.String(80))
 
-    def serialize(self):
-        return {
-            'id': self.id,
-            'nombre_usuario': self.nombre_usuario,
-            'correos_usuario': self.correos_usuario
-        }
+    def json(self):
+        return {'id': self.id, 'name': self.name}
 
 
-with app.app_context():
+with current_app.app_context():
     db.create_all()
 
 
 @app.route('/status/', methods=['GET'])
-def get_status():
-    return make_response(jsonify({'message:': 'pong'}), 200)
+def status():  # put application's code here
+    return 'pong'
 
 
-@app.route('/directories', methods=['POST'])
-def CrearUsuario():
+# crear directorio
+@app.route('/directory/', methods=['POST'])
+def crear_directorio():
     try:
         data = request.get_json()
-        usuario = Usuarios(nombre_usuario=data['nombre_usuario'], correos_usuario=data['correos_usuario'])
-        db.session.add(usuario)
+        new_directory = Directory(name=data['name'])
+        db.session.add(new_directory)
         db.session.commit()
-        return make_response(jsonify({'mensaje': 'usuario creado'}), 201)
-    except Exception:
-        return make_response(jsonify({'mensaje': 'error creando el usuario'}), 500)
+        return make_response(jsonify({'message': 'directorio creado'}), 201)
+    except:
+        return make_response(jsonify({'message': 'error creando directorio'}), 400)
 
 
-@app.route('/directories', methods=['GET'])
-def ObtenerUsuarios():
+@app.route('/directory/', methods=['GET'])
+def get_directorios():
     try:
-        usuarios = Usuarios.query.all()
-        if len(usuarios):
-            return make_response(jsonify({
-                'cantidad': len(usuarios),
-                'proximo': "link a siguiente página",
-                'anterior': "link a página previa",
-                'usuarios': [usuario.serialize() for usuario in usuarios]
-            }), 200)
-        return make_response(jsonify({'mensaje': 'usuarios no encontrados'}), 404)
-    except Exception:
-        return make_response(jsonify({'mensaje': 'error obteniendo a los usuarios'}), 500)
+        directorios = Directory.query.all()
+        return make_response(jsonify({'directorios': [directorio.json() for directorio in directorios]}), 200)
+    except:
+        return make_response(jsonify({'message': 'error consultando directorios'}), 500)
 
 
-@app.route('/directories/<int:id>', methods=['GET'])
-def ObtenerUsuario(id):
+@app.route('/directory/<int:id>', methods=['GET'])
+def get_directorio(id):
     try:
-        usuario = Usuarios.query.get(id)
-        return make_response(jsonify({'usuario': usuario.serialize()}), 200)
-    except Exception:
-        return make_response(jsonify({'mensaje': 'error obteniendo al usuario'}), 500)
+        directorio = Directory.query.filter_by(id=id).first()
+        return make_response(jsonify({'directorio': directorio.json()}), 200)
+    except:
+        return make_response(jsonify({'message': 'error consultando directorio'}), 500)
 
 
-@app.route('/directories/<int:id>', methods=['PUT'])
-def ActualizarUsuario(id):
+@app.route('/directory/<int:id>', methods=['PUT'])
+def get_directorio(id):
     try:
-        usuario = Usuarios.query.get(id)
-        if usuario:
+        directorio = Directory.query.filter_by(id=id).first()
+        if directorio:
             data = request.get_json()
-            usuario.nombre_usuario = data['nombre_usuario']
-            usuario.correos_usuario = data['correos_usuario']
+            directorio.name = data['name']
             db.session.commit()
-            return make_response(jsonify({'mensaje': 'usuario actualizado'}), 200)
-        return make_response(jsonify({'mensaje': 'usuario no encontrado'}), 404)
+            return make_response(jsonify({'message': 'directorio actualizado'}), 200)
+        return make_response(jsonify({'message': 'directorio no encontrado'}), 404)
+    except:
+        return make_response(jsonify({'message': 'error actualizando directorio'}), 500)
 
-    except Exception:
-        return make_response(jsonify({'mensaje': 'error actualizando el usuario'}), 500)
 
-
-@app.route('/directories/<int:id>', methods=['PATCH'])
-def ActualizarParcialUsuario(id):
+@app.route('/directory/<int:id>', methods=['DELETE'])
+def get_directorio(id):
     try:
-        usuario = Usuarios.query.get(id)
-        if usuario:
-            data = request.get_json()
-            if 'nombre_usuario' in data:
-                usuario.nombre_usuario = data['nombre_usuario']
-            if 'correos_usuario' in data:
-                usuario.correos_usuario = data['correos_usuario']
+        directorio = Directory.query.filter_by(id=id).first()
+        if directorio:
+            db.session.delete(directorio)
             db.session.commit()
-            return make_response(jsonify({'mensaje': 'usuario actualizado'}), 200)
-        return make_response(jsonify({'mensaje': 'usuario no encontrado'}), 404)
-    except Exception:
-        return make_response(jsonify({'mensaje': 'error actualizando el usuario'}), 500)
-
-
-@app.route('/directories/<int:id>', methods=['DELETE'])
-def EliminarUsuario(id):
-    try:
-        usuario = Usuarios.query.get(id)
-        if usuario:
-            db.session.delete(usuario)
-            db.session.commit()
-            return make_response(jsonify({'mensaje': 'usuario eliminado'}), 200)
-        return make_response(jsonify({'mensaje': 'usuario no encontrado'}), 404)
-    except Exception:
-        return make_response(jsonify({'mensaje': 'error eliminando el usuario'}), 500)
+            return make_response(jsonify({'message': 'directorio eliminado'}), 200)
+        return make_response(jsonify({'message': 'directorio no encontrado'}), 404)
+    except:
+        return make_response(jsonify({'message': 'error eliminando directorio'}), 500)
