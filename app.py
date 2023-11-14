@@ -12,9 +12,10 @@ class Directory(db.Model):
     __tablename__ = 'directory'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
+    emails = db.Column(db.ARRAY(db.String(50))) 
 
     def json(self):
-        return {'id': self.id, 'name': self.name}
+        return {'id': self.id, 'name': self.name, 'emails': self.emails}
 
 
 with current_app.app_context():
