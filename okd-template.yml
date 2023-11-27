@@ -16,11 +16,11 @@ parameters:
   
   - name: DB_NAME
     description: Nombre de la base de datos.
-    value: cnp2simple
+    value: directories
 
   - name: DB_USR
     description: Nombre de usario para conexión a la base de datos.
-    value: cnp2simple
+    value: practica
 
   - name: DB_PWD
     description: Password de usuario para conexión a la base de datos.
@@ -228,7 +228,7 @@ objects:
             name: "${APP_NAME}-appserver"
         spec:
           containers:
-            - image: 'eltercera/cn-p2-simple-ws'
+            - image: 'jdfermin/flaskapi'
               imagePullPolicy: Always
               name: appserver
               args:
