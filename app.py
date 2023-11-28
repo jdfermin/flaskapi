@@ -2,11 +2,10 @@ from flask import Flask, current_app, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 
+db = SQLAlchemy()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://practica:mipasswd@flask_db:5432/directories'
-db = SQLAlchemy(app)
-current_app.app_context().push()
-
+db.init_app(app)
 
 class Directory(db.Model):
     __tablename__ = 'directory'
