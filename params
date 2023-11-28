@@ -1,0 +1,4 @@
+APP_NAME="flaskapi"
+DB_PWD="mipasswd"
+DOMAIN_NAME="flaskapi.okd-dev.ucab.edu.ve"
+PROJECT_NAME="pj-jdfermin-12"
