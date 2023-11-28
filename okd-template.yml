@@ -192,35 +192,6 @@ objects:
         name: "${APP_NAME}-appserver"
       strategy:
         type: Recreate
-        recreateParams:
-          mid:
-            failurePolicy: Abort
-            execNewPod:
-              containerName: appserver
-              command:
-                - entrypoint.sh
-              env:
-                - name: DJANGO_DATABASES_DEFAULT_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: "${APP_NAME}-keys"
-                      key: db_name
-                - name: DJANGO_DATABASES_DEFAULT_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: "${APP_NAME}-keys"
-                      key: db_usr
-                - name: DJANGO_DATABASES_DEFAULT_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "${APP_NAME}-keys"
-                      key: db_pwd
-                - name: DJANGO_DATABASES_DEFAULT_HOST
-                  value: ${APP_NAME}-pgsql.${PROJECT_NAME}.svc
-                - name: DJANGO_ALLOWED_HOSTS
-                  value: '*'
-                - name: DO_MIGRATE
-                  value: "true"
       template:
         metadata:
           labels:
@@ -233,26 +204,6 @@ objects:
               name: appserver
               args:
                 - appserver
-              env:
-                - name: DJANGO_DATABASES_DEFAULT_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: "${APP_NAME}-keys"
-                      key: db_name
-                - name: DJANGO_DATABASES_DEFAULT_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: "${APP_NAME}-keys"
-                      key: db_usr
-                - name: DJANGO_DATABASES_DEFAULT_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: "${APP_NAME}-keys"
-                      key: db_pwd
-                - name: DJANGO_DATABASES_DEFAULT_HOST
-                  value: ${APP_NAME}-pgsql.${PROJECT_NAME}.svc
-                - name: DJANGO_ALLOWED_HOSTS
-                  value: '*'
               ports:
                 - containerPort: 8000
                   protocol: TCP
